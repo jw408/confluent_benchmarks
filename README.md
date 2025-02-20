@@ -35,6 +35,7 @@
 
 ### Sample Output
 
+```
 --- Benchmark Results ---
 Total Time: 161.28 seconds
 Total Messages Sent: 2400000
@@ -51,3 +52,4 @@ Error Rate: 0.0000%
   p99.9: 0.06 ms
   Max:  0.07 ms
   Min:  0.00 ms
+  ```
