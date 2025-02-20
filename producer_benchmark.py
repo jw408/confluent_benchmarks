@@ -12,7 +12,6 @@ from hdrh.histogram import HdrHistogram
 from dotenv import load_dotenv
 from functools import partial  # Import functools.partial
 
-# confluent kafka topic update topic_0 --config "message.timestamp.type=LogAppendTime" --cluster <your_cluster_id>
 
 load_dotenv()
 
@@ -39,6 +38,7 @@ HISTOGRAM_MAX_VALUE = 60000  # 60 seconds (adjust if needed)
 HISTOGRAM_SIGNIFICANT_DIGITS = 3
 
 # --- File Descriptor Limit Functions ---
+# without this, on Ubuntu, default soft limit is something low like 256 and so you can only spin up a paltry number of threads
 
 def get_file_descriptor_limits():
     soft_limit, hard_limit = resource.getrlimit(resource.RLIMIT_NOFILE)
@@ -72,15 +72,15 @@ def set_file_descriptor_limit(new_soft_limit):
 def generate_message():
     return json.dumps({
         "user_id": str(uuid.uuid4()),
-        "timestamp": time.time(),  # Still useful to have in the message
-        "ad_id": random.randint(1, 100),
-        "message": "This is a Super Bowl ad message!",
-        "some_data": "x" * 512
+        "timestamp": time.time(),  
+        "ad_id": random.randint(1, 10000),
+        "message": "This is a message! It could be anything",
+        "some_data": "x" * 512 # padding to ensure a reasonable message size
     })
 
 # --- Producer Class ---
 
-class SuperBowlProducer:
+class BulkMessageProducer:
     def __init__(self, producer_id, stats_queue):
         self.producer_id = producer_id
         self.stats_queue = stats_queue
@@ -124,7 +124,7 @@ class SuperBowlProducer:
             msg_timestamp_sec, msg_timestamp_usec = msg.timestamp()
             msg_timestamp_ns = (msg_timestamp_sec * 1_000_000_000) + (msg_timestamp_usec * 1_000)
 
-            # --- CORRECTED LATENCY CALCULATION ---
+           
             latency_ns = msg_timestamp_ns - send_time  # Broker time - Send time
             latency_ms = int(latency_ns / 1_000_000)
 
@@ -186,13 +186,13 @@ def main():
     set_file_descriptor_limit(60000)
     print_file_descriptor_info()
 
-    print("Starting Super Bowl Ad Benchmark...")
+    print("Starting Producer Benchmark...")
     start_time = time.time()
 
     stats_queue = deque()
     threads = []
     for i in range(NUM_PRODUCERS):
-        producer = SuperBowlProducer(i, stats_queue)
+        producer = BulkMessageProducer(i, stats_queue)
         thread = threading.Thread(target=producer.produce_messages)
         threads.append(thread)
         thread.start()
