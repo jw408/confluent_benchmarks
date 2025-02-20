@@ -28,3 +28,26 @@
    ^D
 
    ```
+
+### Usage
+
+   1. Edit static config in producer_benchmark.py to taste
+
+### Sample Output
+
+--- Benchmark Results ---
+Total Time: 161.28 seconds
+Total Messages Sent: 2400000
+Total Errors: 0
+Throughput max rate limit: 100000 messages/second
+Achieved Throughput: 14880.79 messages/second
+Error Rate: 0.0000%
+
+--- Single Message Transmission Latency Statistics (milliseconds) ---
+  p50:  0.01 ms
+  p90:  0.02 ms
+  p95:  0.03 ms
+  p99:  0.05 ms
+  p99.9: 0.06 ms
+  Max:  0.07 ms
+  Min:  0.00 ms
