@@ -24,7 +24,7 @@ API_SECRET = os.environ.get("CONFLUENT_API_SECRET")
 # edit these parameters to taste
 
 TOPIC_NAME = "topic_0"
-NUM_PRODUCERS = 64  # Number of producer threads.
+NUM_PRODUCERS = 48  # Number of producer threads.
 MESSAGES_PER_PRODUCER = 50000  # Total messages per producer
 TARGET_MESSAGES_PER_SECOND = 100000 # effectively unlimited for my cable modem connection
 BATCH_SIZE = 16384  # Kafka batch size (bytes)
@@ -105,7 +105,7 @@ class BulkMessageProducer:
             'client.id': f'producer-{self.producer_id}',
             'batch.size': BATCH_SIZE,
             'linger.ms': LINGER_MS,
-            'acks': 'all',  # CRITICAL: Must be 'all'
+            'acks': 'all',  # CRITICAL: Must be 'all' to be fully crash consistent
             'retries': 2147483647,
             'max.in.flight.requests.per.connection': 5,
             'compression.type': 'lz4',
